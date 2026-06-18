@@ -13,6 +13,7 @@ import { ChannelsPage } from '@/features/channels/pages/ChannelsPage';
 import { GdsnPage } from '@/features/gdsn/pages/GdsnPage';
 import { DamPage } from '@/features/dam/pages/DamPage';
 import { UsersPage } from '@/features/users/pages/UsersPage';
+import { SettingsPage } from '@/features/settings/pages/SettingsPage';
 
 export function AppRouter() {
   return (
@@ -33,6 +34,7 @@ export function AppRouter() {
             <Route path="gdsn" element={<GdsnPage />} />
             <Route path="dam" element={<DamPage />} />
             <Route path="users" element={<UsersPage />} />
+            <Route path="settings" element={<SettingsPage />} />
           </Route>
         </Route>
         <Route path="*" element={<Navigate to="/login" replace />} />

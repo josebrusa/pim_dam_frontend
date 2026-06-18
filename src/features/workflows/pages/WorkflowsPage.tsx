@@ -1,40 +1,38 @@
 import { useState } from 'react';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { http } from '@/shared/api/http';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { PageHeader } from '@/shared/ui/PageHeader';
 import { DataTable } from '@/shared/ui/DataTable';
 import { StatusTag } from '@/shared/ui/StatusTag';
 import { StatChip } from '@/shared/ui/StatChip';
 import { FormModal, FormField, inputClass } from '@/shared/ui/FormModal';
 import { LoadingState, ErrorState } from '@/shared/ui/LoadingState';
-import { primaryButtonClass, secondaryButtonClass } from '@/shared/ui/buttonStyles';
+import { ActionButton } from '@/shared/ui/ActionButton';
+import { usePermissions } from '@/shared/hooks/usePermissions';
+import { createWorkflow } from '../api';
+import { useMyWorkflowTasksQuery, useWorkflowsQuery, workflowsKeys } from '../queries';
 
 export function WorkflowsPage() {
   const [open, setOpen] = useState(false);
   const [showMyTasks, setShowMyTasks] = useState(false);
   const [name, setName] = useState('');
   const qc = useQueryClient();
+  const { hasPermission } = usePermissions();
 
-  const { data, isLoading, isError } = useQuery({
-    queryKey: ['workflows'],
-    queryFn: async () => (await http.get('/workflows')).data,
-  });
+  const { data, isLoading, isError } = useWorkflowsQuery();
 
-  const myTasks = useQuery({
-    queryKey: ['workflow-tasks', 'my'],
-    queryFn: async () => (await http.get('/workflow-tasks/my')).data,
-    enabled: showMyTasks,
-  });
+  const myTasks = useMyWorkflowTasksQuery(showMyTasks);
 
   const create = useMutation({
-    mutationFn: (body: { name: string }) => http.post('/workflows', body),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ['workflows'] }); setOpen(false); },
+    mutationFn: createWorkflow,
+    onSuccess: () => { qc.invalidateQueries({ queryKey: workflowsKeys.all }); setOpen(false); },
   });
 
   if (isLoading) return <LoadingState />;
   if (isError) return <ErrorState />;
+  if (!data) return <LoadingState />;
 
   const tasks = showMyTasks ? myTasks.data : data.tasks.data;
+  const canWriteWorkflows = hasPermission('workflows:write');
 
   return (
     <div>
@@ -43,13 +41,13 @@ export function WorkflowsPage() {
         subtitle="Flujos de aprobación y ciclo de vida del producto"
         actions={
           <>
-             <button type="button" onClick={() => setShowMyTasks(!showMyTasks)} className={secondaryButtonClass}>
-               {showMyTasks ? 'Ver todos' : 'Ver mis tareas'}
-             </button>
-             <button type="button" onClick={() => setOpen(true)} className={primaryButtonClass}>+ Nuevo workflow</button>
-           </>
-         }
-       />
+            <ActionButton variant="secondary" onClick={() => setShowMyTasks(!showMyTasks)}>
+                {showMyTasks ? 'Ver todos' : 'Ver mis tareas'}
+            </ActionButton>
+            <ActionButton onClick={() => setOpen(true)} disabled={!canWriteWorkflows}>+ Nuevo workflow</ActionButton>
+            </>
+          }
+        />
       {!showMyTasks && (
         <div className="mb-6 grid gap-4 sm:grid-cols-4">
           <StatChip label="Activos" value={data.stats.active} color="text-accent" />

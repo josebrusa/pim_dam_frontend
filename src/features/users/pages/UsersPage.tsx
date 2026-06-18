@@ -1,39 +1,41 @@
 import { useState } from 'react';
-import { useMutation, useQuery } from '@tanstack/react-query';
-import { http } from '@/shared/api/http';
+import { useMutation } from '@tanstack/react-query';
 import { PageHeader } from '@/shared/ui/PageHeader';
 import { DataTable } from '@/shared/ui/DataTable';
 import { StatusTag } from '@/shared/ui/StatusTag';
 import { StatChip } from '@/shared/ui/StatChip';
 import { FormModal, FormField, inputClass } from '@/shared/ui/FormModal';
 import { LoadingState, ErrorState } from '@/shared/ui/LoadingState';
-import { primaryButtonClass, secondaryButtonClass } from '@/shared/ui/buttonStyles';
+import { ActionButton } from '@/shared/ui/ActionButton';
+import { usePermissions } from '@/shared/hooks/usePermissions';
+import { exportUsersJob, inviteUser } from '../api';
+import { useRolesQuery, useUsersQuery } from '../queries';
+import type { UserInviteForm } from '../types';
 
 export function UsersPage() {
   const [open, setOpen] = useState(false);
-  const [form, setForm] = useState({ email: '', roleCode: 'MARKETING' });
+  const [form, setForm] = useState<UserInviteForm>({ email: '', roleCode: 'MARKETING' });
+  const { hasPermission } = usePermissions();
 
-  const { data, isLoading, isError } = useQuery({
-    queryKey: ['users'],
-    queryFn: async () => (await http.get('/users')).data,
-  });
+  const { data, isLoading, isError } = useUsersQuery();
 
-  const roles = useQuery({
-    queryKey: ['roles'],
-    queryFn: async () => (await http.get('/roles')).data,
-  });
+  const roles = useRolesQuery();
 
   const invite = useMutation({
-    mutationFn: (body: typeof form) => http.post('/users/invitations', body),
+    mutationFn: inviteUser,
     onSuccess: () => { setOpen(false); },
   });
 
   const exportUsers = useMutation({
-    mutationFn: () => http.post('/exports', { type: 'users' }),
+    mutationFn: exportUsersJob,
   });
 
   if (isLoading) return <LoadingState />;
   if (isError) return <ErrorState />;
+  if (!data) return <LoadingState />;
+
+  const canReadUsers = hasPermission('users:read');
+  const canInviteUsers = hasPermission('users:invite');
 
   return (
     <div>
@@ -42,11 +44,11 @@ export function UsersPage() {
         subtitle="Módulo 07/08 — Control de acceso y gestión de equipo"
         actions={
           <>
-             <button type="button" onClick={() => exportUsers.mutate()} className={secondaryButtonClass}>Exportar usuarios</button>
-             <button type="button" onClick={() => setOpen(true)} className={primaryButtonClass}>+ Invitar usuario</button>
-          </>
-        }
-      />
+             <ActionButton variant="secondary" onClick={() => exportUsers.mutate()} disabled={!canReadUsers}>Exportar usuarios</ActionButton>
+             <ActionButton onClick={() => setOpen(true)} disabled={!canInviteUsers}>+ Invitar usuario</ActionButton>
+           </>
+         }
+       />
       <div className="mb-6 grid gap-4 sm:grid-cols-3">
         <StatChip label="Usuarios activos" value={data.meta.total} color="text-warning" />
         <StatChip label="Roles definidos" value={(roles.data ?? []).length} color="text-accent" />

@@ -1,27 +1,33 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { http } from '@/shared/api/http';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { PageHeader } from '@/shared/ui/PageHeader';
 import { DataTable } from '@/shared/ui/DataTable';
 import { StatusTag } from '@/shared/ui/StatusTag';
 import { LoadingState, ErrorState } from '@/shared/ui/LoadingState';
-import { primaryButtonClass, secondaryButtonClass } from '@/shared/ui/buttonStyles';
+import { ActionButton } from '@/shared/ui/ActionButton';
+import { usePermissions } from '@/shared/hooks/usePermissions';
+import { createExportJob, createImportJob } from '../api';
+import { importExportKeys, useExportsQuery, useImportsQuery } from '../queries';
 
 export function ImportExportPage() {
   const qc = useQueryClient();
-  const imports = useQuery({ queryKey: ['imports'], queryFn: async () => (await http.get('/imports')).data });
-  const exports = useQuery({ queryKey: ['exports'], queryFn: async () => (await http.get('/exports')).data });
+  const { hasPermission } = usePermissions();
+  const imports = useImportsQuery();
+  const exports = useExportsQuery();
 
   const createImport = useMutation({
-    mutationFn: () => http.post('/imports', { type: 'CSV' }),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['imports'] }),
+    mutationFn: createImportJob,
+    onSuccess: () => qc.invalidateQueries({ queryKey: importExportKeys.imports }),
   });
   const createExport = useMutation({
-    mutationFn: () => http.post('/exports', { type: 'products' }),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['exports'] }),
+    mutationFn: createExportJob,
+    onSuccess: () => qc.invalidateQueries({ queryKey: importExportKeys.exports }),
   });
 
   if (imports.isLoading || exports.isLoading) return <LoadingState />;
   if (imports.isError || exports.isError) return <ErrorState />;
+  if (!imports.data || !exports.data) return <LoadingState />;
+
+  const canWriteImports = hasPermission('imports:write');
 
   return (
     <div>
@@ -30,11 +36,11 @@ export function ImportExportPage() {
         subtitle="Módulo 05 — Importación y exportación masiva de datos"
         actions={
           <>
-             <button type="button" onClick={() => createExport.mutate()} className={secondaryButtonClass}>Exportar</button>
-             <button type="button" onClick={() => createImport.mutate()} className={primaryButtonClass}>+ Nueva importación</button>
-           </>
-         }
-       />
+            <ActionButton variant="secondary" onClick={() => createExport.mutate()} disabled={!canWriteImports}>Exportar</ActionButton>
+            <ActionButton onClick={() => createImport.mutate()} disabled={!canWriteImports}>+ Nueva importación</ActionButton>
+            </>
+          }
+        />
       <h3 className="mb-3 text-sm font-semibold uppercase tracking-[0.14em] text-text-secondary">Importaciones</h3>
       <DataTable data={imports.data.data} columns={[
         { key: 'code', header: 'Job' }, { key: 'type', header: 'Tipo' },

@@ -1,31 +1,35 @@
 import { useState } from 'react';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { http } from '@/shared/api/http';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { PageHeader } from '@/shared/ui/PageHeader';
 import { DataTable } from '@/shared/ui/DataTable';
 import { StatusTag } from '@/shared/ui/StatusTag';
 import { StatChip } from '@/shared/ui/StatChip';
 import { FormModal, FormField, inputClass } from '@/shared/ui/FormModal';
 import { LoadingState, ErrorState } from '@/shared/ui/LoadingState';
-import { primaryButtonClass, secondaryButtonClass } from '@/shared/ui/buttonStyles';
+import { ActionButton } from '@/shared/ui/ActionButton';
+import { usePermissions } from '@/shared/hooks/usePermissions';
+import { createGdsnPublication } from '../api';
+import { gdsnKeys, useGdsnQuery } from '../queries';
+import type { GdsnForm } from '../types';
 
 export function GdsnPage() {
   const [open, setOpen] = useState(false);
-  const [form, setForm] = useState({ gtin: '', productName: '', dataPool: '1WorldSync', recipient: '' });
+  const [form, setForm] = useState<GdsnForm>({ gtin: '', productName: '', dataPool: '1WorldSync', recipient: '' });
   const qc = useQueryClient();
+  const { hasPermission } = usePermissions();
 
-  const { data, isLoading, isError } = useQuery({
-    queryKey: ['gdsn'],
-    queryFn: async () => (await http.get('/gdsn/publications')).data,
-  });
+  const { data, isLoading, isError } = useGdsnQuery();
 
   const create = useMutation({
-    mutationFn: (body: typeof form) => http.post('/gdsn/publications', body),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ['gdsn'] }); setOpen(false); },
+    mutationFn: createGdsnPublication,
+    onSuccess: () => { qc.invalidateQueries({ queryKey: gdsnKeys.all }); setOpen(false); },
   });
 
   if (isLoading) return <LoadingState />;
   if (isError) return <ErrorState />;
+  if (!data) return <LoadingState />;
+
+  const canWriteGdsn = hasPermission('gdsn:write');
 
   return (
     <div>
@@ -34,11 +38,11 @@ export function GdsnPage() {
         subtitle="Sincronización global de datos de producto mediante estándares GS1"
         actions={
           <>
-             <button type="button" className={secondaryButtonClass}>Ver publicaciones</button>
-             <button type="button" onClick={() => setOpen(true)} className={primaryButtonClass}>+ Enviar al pool</button>
-          </>
-        }
-      />
+            <ActionButton variant="secondary">Ver publicaciones</ActionButton>
+            <ActionButton onClick={() => setOpen(true)} disabled={!canWriteGdsn}>+ Enviar al pool</ActionButton>
+           </>
+          }
+        />
       <div className="mb-6 grid gap-4 sm:grid-cols-4">
         <StatChip label="GTINs registrados" value={data.stats.registered} color="text-success" />
         <StatChip label="Enviados hoy" value={data.stats.sentToday} color="text-info" />

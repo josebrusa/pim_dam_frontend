@@ -1,7 +1,15 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
-import { authStorage, http } from '@/shared/api/http';
+import { authStorage } from '@/shared/api/http';
+import { z } from 'zod';
+import { login } from '../api';
+import { authKeys } from '../queries';
+
+const loginSchema = z.object({
+  email: z.email('Introduce un correo válido.').trim(),
+  password: z.string().min(8, 'La contraseña debe tener al menos 8 caracteres.'),
+});
 
 export function LoginPage() {
   const navigate = useNavigate();
@@ -14,11 +22,16 @@ export function LoginPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    const parsed = loginSchema.safeParse({ email, password });
+    if (!parsed.success) {
+      setError(parsed.error.issues[0]?.message ?? 'Revisa los datos de acceso.');
+      return;
+    }
     setLoading(true);
     try {
-      const { data } = await http.post('/auth/login', { email, password });
+      const data = await login(parsed.data);
       authStorage.setToken(data.accessToken);
-      await queryClient.invalidateQueries({ queryKey: ['auth', 'me'] });
+      await queryClient.invalidateQueries({ queryKey: authKeys.me() });
       navigate('/app/dashboard');
     } catch {
       setError('Credenciales incorrectas. Usa admin@lumify.io / lumify2025');

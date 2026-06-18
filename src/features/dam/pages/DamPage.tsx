@@ -1,34 +1,38 @@
 import { useState } from 'react';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { http } from '@/shared/api/http';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { PageHeader } from '@/shared/ui/PageHeader';
 import { DataTable } from '@/shared/ui/DataTable';
 import { StatusTag } from '@/shared/ui/StatusTag';
 import { StatChip } from '@/shared/ui/StatChip';
 import { FormModal, FormField, inputClass } from '@/shared/ui/FormModal';
 import { LoadingState, ErrorState } from '@/shared/ui/LoadingState';
-import { primaryButtonClass, secondaryButtonClass, surfacePanelClass } from '@/shared/ui/buttonStyles';
+import { ActionButton } from '@/shared/ui/ActionButton';
+import { usePermissions } from '@/shared/hooks/usePermissions';
+import { surfacePanelClass } from '@/shared/ui/buttonStyles';
+import { createAsset } from '../api';
+import { damKeys, useAssetsQuery } from '../queries';
+import type { AssetForm } from '../types';
 
 export function DamPage() {
   const [gallery, setGallery] = useState(false);
   const [open, setOpen] = useState(false);
-  const [form, setForm] = useState({ name: '', type: 'image', sizeBytes: 1024000, channel: 'E-Commerce' });
+  const [form, setForm] = useState<AssetForm>({ name: '', type: 'image', sizeBytes: 1024000, channel: 'E-Commerce' });
   const qc = useQueryClient();
+  const { hasPermission } = usePermissions();
 
-  const { data, isLoading, isError } = useQuery({
-    queryKey: ['assets'],
-    queryFn: async () => (await http.get('/assets')).data,
-  });
+  const { data, isLoading, isError } = useAssetsQuery();
 
   const create = useMutation({
-    mutationFn: (body: typeof form) => http.post('/assets', body),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ['assets'] }); setOpen(false); },
+    mutationFn: createAsset,
+    onSuccess: () => { qc.invalidateQueries({ queryKey: damKeys.all }); setOpen(false); },
   });
 
   if (isLoading) return <LoadingState />;
   if (isError) return <ErrorState />;
+  if (!data) return <LoadingState />;
 
   const formatSize = (bytes: number) => bytes > 1e6 ? `${(bytes / 1e6).toFixed(1)} MB` : `${(bytes / 1024).toFixed(0)} KB`;
+  const canWriteDam = hasPermission('dam:write');
 
   return (
     <div>
@@ -37,13 +41,13 @@ export function DamPage() {
         subtitle="Biblioteca centralizada de imágenes, vídeos y documentos"
         actions={
           <>
-             <button type="button" onClick={() => setGallery(!gallery)} className={secondaryButtonClass}>
-               {gallery ? 'Vista tabla' : 'Vista galería'}
-             </button>
-             <button type="button" onClick={() => setOpen(true)} className={primaryButtonClass}>↑ Subir activos</button>
-           </>
-         }
-       />
+            <ActionButton variant="secondary" onClick={() => setGallery(!gallery)}>
+                {gallery ? 'Vista tabla' : 'Vista galería'}
+            </ActionButton>
+            <ActionButton onClick={() => setOpen(true)} disabled={!canWriteDam}>↑ Subir activos</ActionButton>
+            </>
+          }
+        />
       <div className="mb-6 grid gap-4 sm:grid-cols-4">
         <StatChip label="Activos totales" value={data.stats.total} color="text-accent" />
         <StatChip label="Almacenamiento" value={`${data.stats.storageGb} GB`} color="text-info" />

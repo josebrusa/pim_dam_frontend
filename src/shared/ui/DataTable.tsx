@@ -1,4 +1,5 @@
 import { EmptyState } from './LoadingState';
+import { Pagination } from './Pagination';
 
 type Column<T> = {
   key: string;
@@ -10,13 +11,22 @@ type DataTableProps<T extends Record<string, unknown>> = {
   columns: Column<T>[];
   data: T[];
   keyField?: string;
+  page?: number;
+  pageSize?: number;
+  onPageChange?: (page: number) => void;
 };
 
 export function DataTable<T extends Record<string, unknown>>({
   columns,
   data,
   keyField = 'id',
+  page = 1,
+  pageSize,
+  onPageChange,
 }: DataTableProps<T>) {
+  const paginatedData = pageSize ? data.slice((page - 1) * pageSize, page * pageSize) : data;
+  const totalPages = pageSize ? Math.max(1, Math.ceil(data.length / pageSize)) : 1;
+
   return (
     <div className="overflow-x-auto rounded-2xl border border-border bg-bg-card shadow-[0_24px_60px_rgba(10,61,98,0.08)]">
       <table className="w-full text-left text-sm">
@@ -30,7 +40,7 @@ export function DataTable<T extends Record<string, unknown>>({
           </tr>
         </thead>
         <tbody>
-          {data.map((row) => (
+          {paginatedData.map((row) => (
             <tr key={String(row[keyField])} className="border-b border-border/60 transition-colors hover:bg-accent/5">
               {columns.map((col) => (
                 <td key={col.key} className="px-4 py-3 text-text-primary">
@@ -49,6 +59,7 @@ export function DataTable<T extends Record<string, unknown>>({
           />
         </div>
       )}
+      {onPageChange && pageSize ? <Pagination page={page} totalPages={totalPages} onPageChange={onPageChange} /> : null}
     </div>
   );
 }

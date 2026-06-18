@@ -1,37 +1,41 @@
 import { useState } from 'react';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { http } from '@/shared/api/http';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { PageHeader } from '@/shared/ui/PageHeader';
 import { DataTable } from '@/shared/ui/DataTable';
 import { FormModal, FormField, inputClass } from '@/shared/ui/FormModal';
 import { LoadingState, ErrorState } from '@/shared/ui/LoadingState';
-import { primaryButtonClass, secondaryButtonClass, surfacePanelClass } from '@/shared/ui/buttonStyles';
+import { ActionButton } from '@/shared/ui/ActionButton';
+import { usePermissions } from '@/shared/hooks/usePermissions';
+import { surfacePanelClass } from '@/shared/ui/buttonStyles';
+import { createMappingRule, testMappingRule } from '../api';
+import { mappingKeys, useMappingsQuery } from '../queries';
+import type { MappingRuleForm } from '../types';
 
 export function MappingPage() {
   const [open, setOpen] = useState(false);
   const [testResult, setTestResult] = useState<string | null>(null);
-  const [form, setForm] = useState({ name: '', sourceField: '', targetField: '', transform: 'direct' });
+  const [form, setForm] = useState<MappingRuleForm>({ name: '', sourceField: '', targetField: '', transform: 'direct' });
   const qc = useQueryClient();
+  const { hasPermission } = usePermissions();
 
-  const { data, isLoading, isError } = useQuery({
-    queryKey: ['mappings'],
-    queryFn: async () => (await http.get('/mappings')).data,
-  });
+  const { data, isLoading, isError } = useMappingsQuery();
 
   const createRule = useMutation({
-    mutationFn: (body: typeof form) => http.post('/mappings/rules', body),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ['mappings'] }); setOpen(false); },
+    mutationFn: createMappingRule,
+    onSuccess: () => { qc.invalidateQueries({ queryKey: mappingKeys.all }); setOpen(false); },
   });
 
   const testMapping = useMutation({
-    mutationFn: () => http.post('/mappings/test', { sourceField: 'title', targetField: 'name', value: '<p>Test product</p>', transform: 'strip_html' }),
-    onSuccess: (res) => setTestResult(JSON.stringify(res.data, null, 2)),
+    mutationFn: testMappingRule,
+    onSuccess: (res) => setTestResult(JSON.stringify(res, null, 2)),
   });
 
   if (isLoading) return <LoadingState />;
   if (isError) return <ErrorState />;
+  if (!data) return <LoadingState />;
 
-  const rules = (data as { rules?: Record<string, unknown>[] }[]).flatMap((p) => p.rules ?? []);
+  const rules = data.flatMap((p) => p.rules ?? []);
+  const canManageMappings = hasPermission({ roles: ['PIM_MANAGER', 'IT_ADMIN'] });
 
   return (
     <div>
@@ -40,11 +44,11 @@ export function MappingPage() {
         subtitle="Motor de mapeo y transformación de campos entre sistemas"
         actions={
           <>
-             <button type="button" onClick={() => testMapping.mutate()} className={secondaryButtonClass}>Probar mapeo</button>
-             <button type="button" onClick={() => setOpen(true)} className={primaryButtonClass}>+ Nueva regla</button>
-           </>
-         }
-       />
+            <ActionButton variant="secondary" onClick={() => testMapping.mutate()} disabled={!canManageMappings}>Probar mapeo</ActionButton>
+            <ActionButton onClick={() => setOpen(true)} disabled={!canManageMappings}>+ Nueva regla</ActionButton>
+            </>
+          }
+        />
       {testResult && <pre className={`${surfacePanelClass} mb-4 overflow-x-auto bg-bg-surface p-4 text-xs text-text-secondary`}>{testResult}</pre>}
       <DataTable data={rules} columns={[
         { key: 'name', header: 'Regla' }, { key: 'sourceField', header: 'Origen' },

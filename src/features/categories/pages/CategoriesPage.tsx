@@ -1,39 +1,38 @@
 import { useState } from 'react';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { http } from '@/shared/api/http';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { PageHeader } from '@/shared/ui/PageHeader';
 import { DataTable } from '@/shared/ui/DataTable';
 import { FormModal, FormField, inputClass } from '@/shared/ui/FormModal';
 import { LoadingState, ErrorState } from '@/shared/ui/LoadingState';
-import { primaryButtonClass, secondaryButtonClass } from '@/shared/ui/buttonStyles';
+import { ActionButton } from '@/shared/ui/ActionButton';
+import { usePermissions } from '@/shared/hooks/usePermissions';
+import { categoriesKeys, useCategoriesQuery } from '../queries';
+import { createCategory, importCategoryTree } from '../api';
+import type { CategoryForm } from '../types';
 
 export function CategoriesPage() {
   const [open, setOpen] = useState(false);
-  const [form, setForm] = useState({ code: '', name: '', level: 0 });
+  const [form, setForm] = useState<CategoryForm>({ code: '', name: '', level: 0 });
   const qc = useQueryClient();
+  const { hasPermission } = usePermissions();
 
-  const { data, isLoading, isError } = useQuery({
-    queryKey: ['categories'],
-    queryFn: async () => (await http.get('/categories')).data,
-  });
+  const { data, isLoading, isError } = useCategoriesQuery();
 
   const create = useMutation({
-    mutationFn: (body: typeof form) => http.post('/categories', body),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ['categories'] }); setOpen(false); },
+    mutationFn: createCategory,
+    onSuccess: () => { qc.invalidateQueries({ queryKey: categoriesKeys.all }); setOpen(false); },
   });
 
   const importTree = useMutation({
-    mutationFn: () => http.post('/categories/import-tree', {
-      nodes: [
-        { code: 'CAT-100', name: 'Nueva rama', level: 0 },
-        { code: 'CAT-101', name: 'Subcategoría', parentCode: 'CAT-100', level: 1 },
-      ],
-    }),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['categories'] }),
+    mutationFn: importCategoryTree,
+    onSuccess: () => qc.invalidateQueries({ queryKey: categoriesKeys.all }),
   });
 
   if (isLoading) return <LoadingState />;
   if (isError) return <ErrorState />;
+  if (!data) return <LoadingState />;
+
+  const canManageCategories = hasPermission({ roles: ['PIM_MANAGER', 'IT_ADMIN'] });
 
   return (
     <div>
@@ -42,15 +41,15 @@ export function CategoriesPage() {
         subtitle="Gestión de jerarquías y clasificación del catálogo"
         actions={
           <>
-             <button type="button" onClick={() => importTree.mutate()} className={secondaryButtonClass}>
-               Importar árbol
-             </button>
-             <button type="button" onClick={() => setOpen(true)} className={primaryButtonClass}>
-               + Nueva categoría
-             </button>
-          </>
-        }
-      />
+            <ActionButton variant="secondary" onClick={() => importTree.mutate()} disabled={!canManageCategories}>
+                Importar árbol
+            </ActionButton>
+            <ActionButton onClick={() => setOpen(true)} disabled={!canManageCategories}>
+                + Nueva categoría
+            </ActionButton>
+           </>
+         }
+       />
       <DataTable
         data={data.data}
         columns={[
