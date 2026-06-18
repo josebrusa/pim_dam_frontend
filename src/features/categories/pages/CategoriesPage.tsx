@@ -5,6 +5,7 @@ import { PageHeader } from '@/shared/ui/PageHeader';
 import { DataTable } from '@/shared/ui/DataTable';
 import { FormModal, FormField, inputClass } from '@/shared/ui/FormModal';
 import { LoadingState, ErrorState } from '@/shared/ui/LoadingState';
+import { primaryButtonClass, secondaryButtonClass } from '@/shared/ui/buttonStyles';
 
 export function CategoriesPage() {
   const [open, setOpen] = useState(false);
@@ -41,12 +42,12 @@ export function CategoriesPage() {
         subtitle="Gestión de jerarquías y clasificación del catálogo"
         actions={
           <>
-            <button type="button" onClick={() => importTree.mutate()} className="rounded-[10px] border border-border px-4 py-2 text-sm text-text-secondary hover:bg-white/4">
-              Importar árbol
-            </button>
-            <button type="button" onClick={() => setOpen(true)} className="rounded-[10px] bg-accent px-4 py-2 text-sm font-medium text-white hover:bg-accent-hover">
-              + Nueva categoría
-            </button>
+             <button type="button" onClick={() => importTree.mutate()} className={secondaryButtonClass}>
+               Importar árbol
+             </button>
+             <button type="button" onClick={() => setOpen(true)} className={primaryButtonClass}>
+               + Nueva categoría
+             </button>
           </>
         }
       />

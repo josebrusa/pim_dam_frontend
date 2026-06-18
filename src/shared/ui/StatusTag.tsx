@@ -19,7 +19,7 @@ const colorMap: Record<string, string> = {
 export function StatusTag({ status, label }: { status: string; label?: string }) {
   const cls = colorMap[status] ?? 'bg-accent/12 text-accent';
   return (
-    <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${cls}`}>
+    <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-medium ${cls}`}>
       {label ?? status}
     </span>
   );

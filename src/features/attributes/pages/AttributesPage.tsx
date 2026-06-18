@@ -6,6 +6,7 @@ import { DataTable } from '@/shared/ui/DataTable';
 import { StatusTag } from '@/shared/ui/StatusTag';
 import { FormModal, FormField, inputClass } from '@/shared/ui/FormModal';
 import { LoadingState, ErrorState } from '@/shared/ui/LoadingState';
+import { primaryButtonClass, secondaryButtonClass } from '@/shared/ui/buttonStyles';
 
 export function AttributesPage() {
   const [open, setOpen] = useState(false);
@@ -36,12 +37,12 @@ export function AttributesPage() {
         subtitle="Módulo 02 — Define y organiza los atributos del catálogo"
         actions={
           <>
-            <button type="button" onClick={() => exportMut.mutate()} className="rounded-[10px] border border-border px-4 py-2 text-sm text-text-secondary hover:bg-white/4">
-              Exportar
-            </button>
-            <button type="button" onClick={() => setOpen(true)} className="rounded-[10px] bg-accent px-4 py-2 text-sm font-medium text-white hover:bg-accent-hover">
-              + Nuevo atributo
-            </button>
+             <button type="button" onClick={() => exportMut.mutate()} className={secondaryButtonClass}>
+               Exportar
+             </button>
+             <button type="button" onClick={() => setOpen(true)} className={primaryButtonClass}>
+               + Nuevo atributo
+             </button>
           </>
         }
       />

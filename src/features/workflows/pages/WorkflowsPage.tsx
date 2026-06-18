@@ -7,6 +7,7 @@ import { StatusTag } from '@/shared/ui/StatusTag';
 import { StatChip } from '@/shared/ui/StatChip';
 import { FormModal, FormField, inputClass } from '@/shared/ui/FormModal';
 import { LoadingState, ErrorState } from '@/shared/ui/LoadingState';
+import { primaryButtonClass, secondaryButtonClass } from '@/shared/ui/buttonStyles';
 
 export function WorkflowsPage() {
   const [open, setOpen] = useState(false);
@@ -42,16 +43,16 @@ export function WorkflowsPage() {
         subtitle="Flujos de aprobación y ciclo de vida del producto"
         actions={
           <>
-            <button type="button" onClick={() => setShowMyTasks(!showMyTasks)} className="rounded-[10px] border border-border px-4 py-2 text-sm text-text-secondary hover:bg-white/4">
-              {showMyTasks ? 'Ver todos' : 'Ver mis tareas'}
-            </button>
-            <button type="button" onClick={() => setOpen(true)} className="rounded-[10px] bg-accent px-4 py-2 text-sm font-medium text-white hover:bg-accent-hover">+ Nuevo workflow</button>
-          </>
-        }
-      />
+             <button type="button" onClick={() => setShowMyTasks(!showMyTasks)} className={secondaryButtonClass}>
+               {showMyTasks ? 'Ver todos' : 'Ver mis tareas'}
+             </button>
+             <button type="button" onClick={() => setOpen(true)} className={primaryButtonClass}>+ Nuevo workflow</button>
+           </>
+         }
+       />
       {!showMyTasks && (
         <div className="mb-6 grid gap-4 sm:grid-cols-4">
-          <StatChip label="Activos" value={data.stats.active} color="text-violet-400" />
+          <StatChip label="Activos" value={data.stats.active} color="text-accent" />
           <StatChip label="Pendientes" value={data.stats.pending} color="text-warning" />
           <StatChip label="Completados" value={data.stats.completed} color="text-success" />
           <StatChip label="Bloqueados" value={data.stats.blocked} color="text-danger" />

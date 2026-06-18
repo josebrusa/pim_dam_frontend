@@ -5,6 +5,7 @@ import { PageHeader } from '@/shared/ui/PageHeader';
 import { DataTable } from '@/shared/ui/DataTable';
 import { FormModal, FormField, inputClass } from '@/shared/ui/FormModal';
 import { LoadingState, ErrorState } from '@/shared/ui/LoadingState';
+import { primaryButtonClass, secondaryButtonClass, surfacePanelClass } from '@/shared/ui/buttonStyles';
 
 export function MappingPage() {
   const [open, setOpen] = useState(false);
@@ -39,12 +40,12 @@ export function MappingPage() {
         subtitle="Motor de mapeo y transformación de campos entre sistemas"
         actions={
           <>
-            <button type="button" onClick={() => testMapping.mutate()} className="rounded-[10px] border border-border px-4 py-2 text-sm text-text-secondary hover:bg-white/4">Probar mapeo</button>
-            <button type="button" onClick={() => setOpen(true)} className="rounded-[10px] bg-accent px-4 py-2 text-sm font-medium text-white hover:bg-accent-hover">+ Nueva regla</button>
-          </>
-        }
-      />
-      {testResult && <pre className="mb-4 rounded-lg border border-border bg-bg-surface p-4 text-xs">{testResult}</pre>}
+             <button type="button" onClick={() => testMapping.mutate()} className={secondaryButtonClass}>Probar mapeo</button>
+             <button type="button" onClick={() => setOpen(true)} className={primaryButtonClass}>+ Nueva regla</button>
+           </>
+         }
+       />
+      {testResult && <pre className={`${surfacePanelClass} mb-4 overflow-x-auto bg-bg-surface p-4 text-xs text-text-secondary`}>{testResult}</pre>}
       <DataTable data={rules} columns={[
         { key: 'name', header: 'Regla' }, { key: 'sourceField', header: 'Origen' },
         { key: 'targetField', header: 'Destino' }, { key: 'transform', header: 'Transform' },

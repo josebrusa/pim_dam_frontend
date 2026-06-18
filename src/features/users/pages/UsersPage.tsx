@@ -7,6 +7,7 @@ import { StatusTag } from '@/shared/ui/StatusTag';
 import { StatChip } from '@/shared/ui/StatChip';
 import { FormModal, FormField, inputClass } from '@/shared/ui/FormModal';
 import { LoadingState, ErrorState } from '@/shared/ui/LoadingState';
+import { primaryButtonClass, secondaryButtonClass } from '@/shared/ui/buttonStyles';
 
 export function UsersPage() {
   const [open, setOpen] = useState(false);
@@ -41,8 +42,8 @@ export function UsersPage() {
         subtitle="Módulo 07/08 — Control de acceso y gestión de equipo"
         actions={
           <>
-            <button type="button" onClick={() => exportUsers.mutate()} className="rounded-[10px] border border-border px-4 py-2 text-sm text-text-secondary hover:bg-white/4">Exportar usuarios</button>
-            <button type="button" onClick={() => setOpen(true)} className="rounded-[10px] bg-accent px-4 py-2 text-sm font-medium text-white hover:bg-accent-hover">+ Invitar usuario</button>
+             <button type="button" onClick={() => exportUsers.mutate()} className={secondaryButtonClass}>Exportar usuarios</button>
+             <button type="button" onClick={() => setOpen(true)} className={primaryButtonClass}>+ Invitar usuario</button>
           </>
         }
       />

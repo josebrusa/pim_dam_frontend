@@ -7,6 +7,7 @@ import { StatusTag } from '@/shared/ui/StatusTag';
 import { StatChip } from '@/shared/ui/StatChip';
 import { FormModal, FormField, inputClass } from '@/shared/ui/FormModal';
 import { LoadingState, ErrorState } from '@/shared/ui/LoadingState';
+import { primaryButtonClass, secondaryButtonClass } from '@/shared/ui/buttonStyles';
 
 export function GdsnPage() {
   const [open, setOpen] = useState(false);
@@ -33,8 +34,8 @@ export function GdsnPage() {
         subtitle="Sincronización global de datos de producto mediante estándares GS1"
         actions={
           <>
-            <button type="button" className="rounded-[10px] border border-border px-4 py-2 text-sm text-text-secondary hover:bg-white/4">Ver publicaciones</button>
-            <button type="button" onClick={() => setOpen(true)} className="rounded-[10px] bg-accent px-4 py-2 text-sm font-medium text-white hover:bg-accent-hover">+ Enviar al pool</button>
+             <button type="button" className={secondaryButtonClass}>Ver publicaciones</button>
+             <button type="button" onClick={() => setOpen(true)} className={primaryButtonClass}>+ Enviar al pool</button>
           </>
         }
       />

@@ -6,6 +6,7 @@ import { DataTable } from '@/shared/ui/DataTable';
 import { StatusTag } from '@/shared/ui/StatusTag';
 import { FormModal, FormField, inputClass } from '@/shared/ui/FormModal';
 import { LoadingState, ErrorState } from '@/shared/ui/LoadingState';
+import { primaryButtonClass, secondaryButtonClass } from '@/shared/ui/buttonStyles';
 
 export function ChannelsPage() {
   const [open, setOpen] = useState(false);
@@ -37,10 +38,10 @@ export function ChannelsPage() {
         subtitle="Módulo 09 — Gestión de canales de publicación y conectores"
         actions={
           <>
-            <button type="button" onClick={() => syncAll.mutate()} disabled={syncAll.isPending} className="rounded-[10px] border border-border px-4 py-2 text-sm text-text-secondary hover:bg-white/4">
-              {syncAll.isPending ? 'Sincronizando...' : 'Sincronizar todos'}
-            </button>
-            <button type="button" onClick={() => setOpen(true)} className="rounded-[10px] bg-accent px-4 py-2 text-sm font-medium text-white hover:bg-accent-hover">+ Nuevo canal</button>
+             <button type="button" onClick={() => syncAll.mutate()} disabled={syncAll.isPending} className={secondaryButtonClass}>
+               {syncAll.isPending ? 'Sincronizando...' : 'Sincronizar todos'}
+             </button>
+             <button type="button" onClick={() => setOpen(true)} className={primaryButtonClass}>+ Nuevo canal</button>
           </>
         }
       />

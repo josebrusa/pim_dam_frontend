@@ -28,31 +28,32 @@ export function LoginPage() {
   };
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center bg-bg-base">
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[linear-gradient(135deg,#0a3d62_0%,#0d4f7e_60%,#0a3558_100%)] px-4">
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute -left-24 -top-24 h-[500px] w-[500px] rounded-full bg-accent/15 blur-[80px]" />
-        <div className="absolute -bottom-20 -right-20 h-[400px] w-[400px] rounded-full bg-cyan-500/15 blur-[80px]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_70%_at_80%_50%,rgba(60,157,255,0.15)_0%,transparent_70%)]" />
+        <div className="absolute -left-24 -top-24 h-[500px] w-[500px] rounded-full bg-accent/15 blur-[90px]" />
+        <div className="absolute -bottom-24 right-0 h-[380px] w-[380px] rounded-full bg-white/10 blur-[100px]" />
       </div>
 
-      <div className="relative z-10 w-full max-w-[420px] rounded-[14px] border border-border bg-bg-card p-11 shadow-2xl">
+      <div className="relative z-10 w-full max-w-[440px] rounded-[24px] border border-white/15 bg-white/8 p-11 text-white shadow-[0_20px_50px_rgba(10,61,98,0.25)] backdrop-blur-xl">
         <div className="mb-8 flex items-center gap-2.5">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent font-mono text-base font-medium text-white">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent font-mono text-base font-medium text-white shadow-[0_10px_30px_rgba(60,157,255,0.35)]">
             L
           </div>
           <div>
             <div className="text-xl font-semibold tracking-tight">Lumify</div>
-            <div className="text-[13px] text-text-secondary">Product Information Management</div>
+            <div className="text-[13px] text-white/70">Product Information Management</div>
           </div>
         </div>
 
         <h1 className="mb-1.5 text-[22px] font-semibold">Iniciar sesión</h1>
-        <p className="mb-7 text-sm text-text-secondary">
-          Accede a tu espacio de trabajo PIM
+        <p className="mb-7 text-sm leading-6 text-white/70">
+          Centraliza catalogo, contenido y publicacion desde un mismo espacio de trabajo.
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label htmlFor="email" className="mb-1.5 block text-[13px] text-text-secondary">
+            <label htmlFor="email" className="mb-1.5 block text-[13px] text-white/70">
               Email
             </label>
             <input
@@ -60,12 +61,12 @@ export function LoginPage() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full rounded-[10px] border border-border bg-bg-input px-3.5 py-2.5 text-sm outline-none focus:border-accent/40"
+              className="w-full rounded-xl border border-white/20 bg-white/10 px-3.5 py-2.5 text-sm text-white outline-none placeholder:text-white/40 focus:border-accent"
               required
             />
           </div>
           <div>
-            <label htmlFor="password" className="mb-1.5 block text-[13px] text-text-secondary">
+            <label htmlFor="password" className="mb-1.5 block text-[13px] text-white/70">
               Contraseña
             </label>
             <input
@@ -73,14 +74,14 @@ export function LoginPage() {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full rounded-[10px] border border-border bg-bg-input px-3.5 py-2.5 text-sm outline-none focus:border-accent/40"
+              className="w-full rounded-xl border border-white/20 bg-white/10 px-3.5 py-2.5 text-sm text-white outline-none placeholder:text-white/40 focus:border-accent"
               required
             />
           </div>
 
-          <div className="flex items-start gap-2 rounded-lg border border-border bg-bg-surface p-3 text-xs text-text-muted">
+          <div className="flex items-start gap-2 rounded-xl border border-white/15 bg-accent/15 p-3 text-xs text-white/70">
             <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-accent" />
-            Demo: admin@lumify.io · lumify2025
+            Acceso demo: admin@lumify.io · lumify2025
           </div>
 
           {error && <p className="text-center text-sm text-danger">{error}</p>}
@@ -88,7 +89,7 @@ export function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full rounded-[10px] bg-accent py-3 text-[15px] font-medium text-white transition hover:bg-accent-hover disabled:opacity-60"
+            className="w-full rounded-full bg-accent py-3 text-[15px] font-medium text-white shadow-[0_10px_30px_rgba(60,157,255,0.35)] transition-all hover:bg-accent-hover disabled:opacity-60"
           >
             {loading ? 'Entrando...' : 'Entrar'}
           </button>

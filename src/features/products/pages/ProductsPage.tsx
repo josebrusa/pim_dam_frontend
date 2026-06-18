@@ -6,6 +6,7 @@ import { DataTable } from '@/shared/ui/DataTable';
 import { StatusTag } from '@/shared/ui/StatusTag';
 import { FormModal, FormField, inputClass } from '@/shared/ui/FormModal';
 import { LoadingState, ErrorState } from '@/shared/ui/LoadingState';
+import { filterChipClass, primaryButtonClass, secondaryButtonClass, surfacePanelClass } from '@/shared/ui/buttonStyles';
 
 export function ProductsPage() {
   const [open, setOpen] = useState(false);
@@ -34,22 +35,22 @@ export function ProductsPage() {
         subtitle="Módulo 03 — Fichas de producto y motor de búsqueda"
         actions={
           <>
-            <button type="button" onClick={() => setShowFilters(!showFilters)} className="rounded-[10px] border border-border px-4 py-2 text-sm text-text-secondary hover:bg-white/4">
-              Filtros avanzados
-            </button>
-            <button type="button" onClick={() => setOpen(true)} className="rounded-[10px] bg-accent px-4 py-2 text-sm font-medium text-white hover:bg-accent-hover">
-              + Nuevo producto
-            </button>
+             <button type="button" onClick={() => setShowFilters(!showFilters)} className={secondaryButtonClass}>
+               Filtros avanzados
+             </button>
+             <button type="button" onClick={() => setOpen(true)} className={primaryButtonClass}>
+               + Nuevo producto
+             </button>
           </>
         }
       />
       {showFilters && (
-        <div className="mb-4 flex gap-2">
-          {['', 'published', 'draft', 'incomplete'].map((s) => (
-            <button key={s || 'all'} type="button" onClick={() => setStatus(s)} className={`rounded-lg px-3 py-1.5 text-xs ${status === s ? 'bg-accent/12 text-accent' : 'border border-border text-text-secondary'}`}>
-              {s || 'Todos'}
-            </button>
-          ))}
+         <div className={`${surfacePanelClass} mb-4 flex flex-wrap gap-2 p-3`}>
+           {['', 'published', 'draft', 'incomplete'].map((s) => (
+             <button key={s || 'all'} type="button" onClick={() => setStatus(s)} className={`${filterChipClass} ${status === s ? 'border-accent/20 bg-accent/10 text-accent' : ''}`}>
+               {s || 'Todos'}
+             </button>
+           ))}
         </div>
       )}
       <DataTable
