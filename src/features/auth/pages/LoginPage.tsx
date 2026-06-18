@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import { authStorage, http } from '@/shared/api/http';
 
 export function LoginPage() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [email, setEmail] = useState('admin@lumify.io');
   const [password, setPassword] = useState('lumify2025');
   const [error, setError] = useState('');
@@ -16,6 +18,7 @@ export function LoginPage() {
     try {
       const { data } = await http.post('/auth/login', { email, password });
       authStorage.setToken(data.accessToken);
+      await queryClient.invalidateQueries({ queryKey: ['auth', 'me'] });
       navigate('/app/dashboard');
     } catch {
       setError('Credenciales incorrectas. Usa admin@lumify.io / lumify2025');
