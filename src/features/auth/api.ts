@@ -1,9 +1,20 @@
 import { http } from '@/shared/api/http';
 import { z } from 'zod';
-import type { AuthMeResponse, LoginPayload, LoginResponse } from './types';
+import type { AuthMeApiResponse, LoginPayload, LoginResponse } from './types';
 
 const authUserSchema = z.object({
   id: z.string(),
+  email: z.email(),
+  name: z.string(),
+  initials: z.string(),
+  role: z.string(),
+  tenantId: z.string(),
+  tenantName: z.string(),
+  permissions: z.array(z.string()),
+});
+
+const authMeUserSchema = z.object({
+  userId: z.string(),
   email: z.email(),
   name: z.string(),
   initials: z.string(),
@@ -19,7 +30,7 @@ const loginResponseSchema = z.object({
 });
 
 const authMeResponseSchema = z.object({
-  user: authUserSchema,
+  user: authMeUserSchema,
 });
 
 export async function login(body: LoginPayload) {
@@ -28,6 +39,16 @@ export async function login(body: LoginPayload) {
 }
 
 export async function getAuthMe() {
-  const { data } = await http.get<AuthMeResponse>('/auth/me');
-  return authMeResponseSchema.parse(data).user;
+  const { data } = await http.get<AuthMeApiResponse>('/auth/me');
+  const user = authMeResponseSchema.parse(data).user;
+  return {
+    id: user.userId,
+    email: user.email,
+    name: user.name,
+    initials: user.initials,
+    role: user.role,
+    tenantId: user.tenantId,
+    tenantName: user.tenantName,
+    permissions: user.permissions,
+  };
 }

@@ -19,6 +19,10 @@ export type LoginResponse = {
   user: AuthUser;
 };
 
+export type AuthMeApiResponse = {
+  user: Omit<AuthUser, 'id'> & { userId: string };
+};
+
 export type AuthMeResponse = {
   user: AuthUser;
 };
