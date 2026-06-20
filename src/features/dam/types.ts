@@ -5,6 +5,8 @@ export type AssetForm = {
   channel: string;
 };
 
+export type AssetUpdateForm = AssetForm;
+
 export type AssetItem = {
   id: string;
   name: string;

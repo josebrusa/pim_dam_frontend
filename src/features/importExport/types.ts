@@ -6,6 +6,11 @@ export type JobItem = {
   rowCount?: number;
 };
 
+export type JobUpdateForm = {
+  type: string;
+  status: string;
+};
+
 export type JobsResponse = {
   data: JobItem[];
 };

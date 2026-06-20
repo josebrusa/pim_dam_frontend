@@ -5,6 +5,10 @@ export type GdsnForm = {
   recipient: string;
 };
 
+export type GdsnUpdateForm = GdsnForm & {
+  status: string;
+};
+
 export type GdsnItem = {
   id: string;
   gtin: string;

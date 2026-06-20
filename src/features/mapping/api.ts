@@ -10,6 +10,14 @@ export async function createMappingRule(body: MappingRuleForm) {
   return http.post('/mappings/rules', body);
 }
 
+export async function updateMappingRule(id: string, body: MappingRuleForm) {
+  return http.patch(`/mappings/rules/${id}`, body);
+}
+
+export async function deleteMappingRule(id: string) {
+  return http.delete(`/mappings/rules/${id}`);
+}
+
 export async function testMappingRule() {
   const { data } = await http.post('/mappings/test', {
     sourceField: 'title',

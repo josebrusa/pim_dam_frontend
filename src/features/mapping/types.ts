@@ -6,6 +6,7 @@ export type MappingRuleForm = {
 };
 
 export type MappingRule = {
+  id: string;
   name: string;
   sourceField: string;
   targetField: string;
@@ -13,5 +14,6 @@ export type MappingRule = {
 };
 
 export type MappingProfile = {
+  id?: string;
   rules?: MappingRule[];
 };
