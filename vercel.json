@@ -1,6 +1,10 @@
 {
   "routes": [
     {
+      "src": "/api/(.*)",
+      "dest": "https://pim-dam-backend.vercel.app/api/$1"
+    },
+    {
       "handle": "filesystem"
     },
     {
