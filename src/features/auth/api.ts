@@ -25,7 +25,6 @@ const authMeUserSchema = z.object({
 });
 
 const loginResponseSchema = z.object({
-  accessToken: z.string(),
   user: authUserSchema,
 });
 
@@ -51,4 +50,8 @@ export async function getAuthMe() {
     tenantName: user.tenantName,
     permissions: user.permissions,
   };
+}
+
+export async function logout() {
+  await http.post('/auth/logout');
 }

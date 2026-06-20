@@ -6,10 +6,11 @@ export const authKeys = {
   me: () => [...authKeys.all, 'me'] as const,
 };
 
-export function useAuthMeQuery() {
+export function useAuthMeQuery(enabled = true) {
   return useQuery({
     queryKey: authKeys.me(),
     queryFn: getAuthMe,
+    enabled,
     retry: false,
   });
 }

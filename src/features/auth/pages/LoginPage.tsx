@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
-import { authStorage } from '@/shared/api/http';
 import { z } from 'zod';
 import { login } from '../api';
 import { authKeys } from '../queries';
@@ -29,8 +28,7 @@ export function LoginPage() {
     }
     setLoading(true);
     try {
-      const data = await login(parsed.data);
-      authStorage.setToken(data.accessToken);
+      await login(parsed.data);
       await queryClient.invalidateQueries({ queryKey: authKeys.me() });
       navigate('/app/dashboard');
     } catch {

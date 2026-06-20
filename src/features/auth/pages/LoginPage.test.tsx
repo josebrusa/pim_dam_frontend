@@ -5,11 +5,10 @@ import userEvent from '@testing-library/user-event';
 import { LoginPage } from './LoginPage';
 import { renderWithProviders } from '@/test/test-utils';
 
-const { navigateMock, loginMock, invalidateQueriesMock, setTokenMock } = vi.hoisted(() => ({
+const { navigateMock, loginMock, invalidateQueriesMock } = vi.hoisted(() => ({
   navigateMock: vi.fn(),
   loginMock: vi.fn(),
   invalidateQueriesMock: vi.fn().mockResolvedValue(undefined),
-  setTokenMock: vi.fn(),
 }));
 
 vi.mock('react-router-dom', async () => {
@@ -28,10 +27,6 @@ vi.mock('@tanstack/react-query', async () => {
   };
 });
 
-vi.mock('@/shared/api/http', () => ({
-  authStorage: { setToken: setTokenMock, clear: vi.fn(), getToken: vi.fn() },
-}));
-
 vi.mock('@/features/auth/api', () => ({
   login: loginMock,
 }));
@@ -41,11 +36,10 @@ describe('LoginPage', () => {
     navigateMock.mockReset();
     loginMock.mockReset();
     invalidateQueriesMock.mockClear();
-    setTokenMock.mockReset();
   });
 
   it('envía login y redirige al dashboard', async () => {
-    loginMock.mockResolvedValue({ accessToken: 'token-demo', user: {} });
+    loginMock.mockResolvedValue({ user: {} });
 
     renderWithProviders(
       <MemoryRouter>

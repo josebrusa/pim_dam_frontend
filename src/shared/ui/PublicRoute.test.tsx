@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { screen } from '@testing-library/react';
-import { ProtectedRoute } from './ProtectedRoute';
 import { renderWithProviders } from '@/test/test-utils';
+import { PublicRoute } from './PublicRoute';
 
 const { useAuthMeMock, isAuthSessionErrorMock } = vi.hoisted(() => ({
   useAuthMeMock: vi.fn(),
@@ -17,7 +17,7 @@ vi.mock('@/features/auth/hooks/useAuthMe', () => ({
   useAuthMe: useAuthMeMock,
 }));
 
-describe('ProtectedRoute', () => {
+describe('PublicRoute', () => {
   beforeEach(() => {
     useAuthMeMock.mockReset();
     useAuthMeMock.mockReturnValue({ data: undefined, isPending: false, isError: false });
@@ -25,17 +25,17 @@ describe('ProtectedRoute', () => {
     isAuthSessionErrorMock.mockReturnValue(false);
   });
 
-  it('redirige a login cuando no hay token', () => {
+  it('muestra login cuando no hay token', () => {
     useAuthMeMock.mockReturnValue({ data: undefined, error: { response: { status: 401 } }, isPending: false, isError: true });
     isAuthSessionErrorMock.mockReturnValue(true);
 
     renderWithProviders(
-      <MemoryRouter initialEntries={['/app/dashboard']}>
+      <MemoryRouter initialEntries={['/login']}>
         <Routes>
-          <Route element={<ProtectedRoute />}>
-            <Route path="/app/dashboard" element={<div>Dashboard</div>} />
+          <Route element={<PublicRoute />}>
+            <Route path="/login" element={<div>Login screen</div>} />
           </Route>
-          <Route path="/login" element={<div>Login screen</div>} />
+          <Route path="/app/dashboard" element={<div>Dashboard</div>} />
         </Routes>
       </MemoryRouter>,
     );
@@ -43,7 +43,7 @@ describe('ProtectedRoute', () => {
     expect(screen.getByText('Login screen')).toBeInTheDocument();
   });
 
-  it('renderiza la ruta protegida cuando la sesion es valida', () => {
+  it('redirige al dashboard cuando la sesion ya existe', () => {
     useAuthMeMock.mockReturnValue({
       data: { id: '1', role: 'PIM_MANAGER', permissions: ['*'] },
       isPending: false,
@@ -51,12 +51,12 @@ describe('ProtectedRoute', () => {
     });
 
     renderWithProviders(
-      <MemoryRouter initialEntries={['/app/dashboard']}>
+      <MemoryRouter initialEntries={['/login']}>
         <Routes>
-          <Route element={<ProtectedRoute />}>
-            <Route path="/app/dashboard" element={<div>Dashboard</div>} />
+          <Route element={<PublicRoute />}>
+            <Route path="/login" element={<div>Login screen</div>} />
           </Route>
-          <Route path="/login" element={<div>Login screen</div>} />
+          <Route path="/app/dashboard" element={<div>Dashboard</div>} />
         </Routes>
       </MemoryRouter>,
     );

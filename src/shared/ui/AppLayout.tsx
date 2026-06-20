@@ -1,12 +1,15 @@
 import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import {
   LayoutDashboard, Tags, Package, FolderTree, ArrowUpDown, Shuffle,
   GitBranch, Radio, Globe, Image, Users,
 } from 'lucide-react';
 import { Outlet } from 'react-router-dom';
-import { authStorage, http } from '@/shared/api/http';
+import { http } from '@/shared/api/http';
 import { useAuthMe } from '@/features/auth/hooks/useAuthMe';
+import { authKeys } from '@/features/auth/queries';
+import { logout } from '@/features/auth/api';
 import { useQuery } from '@tanstack/react-query';
 import { Sidebar, type NavSection } from './Sidebar';
 import { Topbar } from './Topbar';
@@ -58,6 +61,7 @@ const routeTitles: Record<string, string> = {
 
 export function AppLayout() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const location = useLocation();
   const { data: user } = useAuthMe();
   const { hasPermission } = usePermissions();
@@ -73,8 +77,9 @@ export function AppLayout() {
     enabled: searchQ.length >= 2,
   });
 
-  const handleLogout = () => {
-    authStorage.clear();
+  const handleLogout = async () => {
+    await logout().catch(() => undefined);
+    await queryClient.removeQueries({ queryKey: authKeys.me() });
     navigate('/login');
   };
 
