@@ -53,7 +53,7 @@ export function GdsnPage() {
         actions={
           <>
             <ActionButton variant="secondary">Ver publicaciones</ActionButton>
-            <ActionButton onClick={() => setOpen(true)} disabled={!canWriteGdsn}>+ Enviar al pool</ActionButton>
+            <ActionButton onClick={() => setOpen(true)} disabled={!canWriteGdsn}>+ Nueva publicación</ActionButton>
            </>
           }
         />
@@ -74,7 +74,7 @@ export function GdsnPage() {
            { key: 'actions', header: 'Acciones', render: (r) => canWriteGdsn ? <div className="flex gap-3"><button type="button" className="text-sm font-medium text-accent transition-colors hover:text-accent-hover" onClick={() => handleEdit(r as GdsnItem)}>Editar</button><button type="button" className="text-sm font-medium text-danger transition-colors hover:opacity-80" onClick={() => { setEditingPublication(r as GdsnItem); setConfirmDeleteOpen(true); }}>Eliminar</button></div> : '—' },
          ]}
        />
-      <FormModal open={open} title="Enviar al pool" onClose={() => setOpen(false)} onSubmit={(e) => { e.preventDefault(); create.mutate(form); }} loading={create.isPending}>
+      <FormModal open={open} title="Nueva publicación" onClose={() => setOpen(false)} onSubmit={(e) => { e.preventDefault(); create.mutate(form); }} loading={create.isPending}>
         <FormField label="GTIN"><input className={inputClass} value={form.gtin} onChange={(e) => setForm({ ...form, gtin: e.target.value })} required /></FormField>
         <FormField label="Producto"><input className={inputClass} value={form.productName} onChange={(e) => setForm({ ...form, productName: e.target.value })} required /></FormField>
         <FormField label="Destinatario"><input className={inputClass} value={form.recipient} onChange={(e) => setForm({ ...form, recipient: e.target.value })} required /></FormField>

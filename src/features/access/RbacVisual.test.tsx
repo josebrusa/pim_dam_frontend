@@ -24,6 +24,8 @@ vi.mock('@/features/categories/queries', () => ({
 vi.mock('@/features/categories/api', () => ({
   createCategory: vi.fn(),
   importCategoryTree: vi.fn(),
+  updateCategory: vi.fn(),
+  deleteCategory: vi.fn(),
 }));
 
 vi.mock('@/features/importExport/queries', () => ({
@@ -43,6 +45,10 @@ vi.mock('@/features/importExport/queries', () => ({
 vi.mock('@/features/importExport/api', () => ({
   createImportJob: vi.fn(),
   createExportJob: vi.fn(),
+  updateImportJob: vi.fn(),
+  updateExportJob: vi.fn(),
+  deleteImportJob: vi.fn(),
+  deleteExportJob: vi.fn(),
 }));
 
 describe('RBAC visual', () => {

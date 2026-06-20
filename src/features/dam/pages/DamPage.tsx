@@ -65,7 +65,7 @@ export function DamPage() {
             <ActionButton variant="secondary" onClick={() => setGallery(!gallery)}>
                 {gallery ? 'Vista tabla' : 'Vista galería'}
             </ActionButton>
-            <ActionButton onClick={() => setOpen(true)} disabled={!canWriteDam}>↑ Subir activos</ActionButton>
+            <ActionButton onClick={() => setOpen(true)} disabled={!canWriteDam}>+ Nuevo activo</ActionButton>
             </>
           }
         />
@@ -98,7 +98,7 @@ export function DamPage() {
            ]}
          />
        )}
-      <FormModal open={open} title="Subir activo" onClose={() => setOpen(false)} onSubmit={(e) => { e.preventDefault(); create.mutate(form); }} loading={create.isPending}>
+      <FormModal open={open} title="Nuevo activo" onClose={() => setOpen(false)} onSubmit={(e) => { e.preventDefault(); create.mutate(form); }} loading={create.isPending}>
         <FormField label="Nombre"><input className={inputClass} value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required /></FormField>
         <FormField label="Tipo">
           <select className={inputClass} value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value })}>
