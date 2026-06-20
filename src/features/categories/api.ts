@@ -1,5 +1,5 @@
 import { http } from '@/shared/api/http';
-import type { CategoriesResponse, CategoryForm } from './types';
+import type { CategoriesResponse, CategoryForm, CategoryUpdateForm } from './types';
 
 export async function getCategories() {
   const { data } = await http.get<CategoriesResponse>('/categories');
@@ -8,6 +8,14 @@ export async function getCategories() {
 
 export async function createCategory(body: CategoryForm) {
   return http.post('/categories', body);
+}
+
+export async function updateCategory(id: string, body: CategoryUpdateForm) {
+  return http.patch(`/categories/${id}`, body);
+}
+
+export async function deleteCategory(id: string) {
+  return http.delete(`/categories/${id}`);
 }
 
 export async function importCategoryTree() {

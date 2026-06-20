@@ -1,6 +1,6 @@
 import { http } from '@/shared/api/http';
 import { z } from 'zod';
-import type { ProductForm, ProductListParams, ProductsResponse } from './types';
+import type { ProductForm, ProductListParams, ProductsResponse, ProductUpdateForm } from './types';
 
 const productSchema = z.object({
   id: z.string(),
@@ -21,4 +21,12 @@ export async function getProducts(params: ProductListParams) {
 
 export async function createProduct(body: ProductForm) {
   return http.post('/products', body);
+}
+
+export async function updateProduct(id: string, body: ProductUpdateForm) {
+  return http.patch(`/products/${id}`, body);
+}
+
+export async function deleteProduct(id: string) {
+  return http.delete(`/products/${id}`);
 }

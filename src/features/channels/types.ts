@@ -3,6 +3,12 @@ export type ChannelForm = {
   connector: string;
 };
 
+export type ChannelUpdateForm = {
+  name: string;
+  connector: string;
+  status: string;
+};
+
 export type ChannelItem = {
   id: string;
   name: string;

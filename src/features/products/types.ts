@@ -3,6 +3,11 @@ export type ProductForm = {
   name: string;
 };
 
+export type ProductUpdateForm = {
+  name: string;
+  status: string;
+};
+
 export type ProductItem = {
   id: string;
   code: string;

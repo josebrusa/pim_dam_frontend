@@ -1,5 +1,5 @@
 import { http } from '@/shared/api/http';
-import type { RoleItem, UserInviteForm, UsersResponse } from './types';
+import type { RoleItem, UserInviteForm, UserUpdateForm, UsersResponse } from './types';
 
 export async function getUsers() {
   const { data } = await http.get<UsersResponse>('/users');
@@ -13,6 +13,14 @@ export async function getRoles() {
 
 export async function inviteUser(body: UserInviteForm) {
   return http.post('/users/invitations', body);
+}
+
+export async function updateUser(id: string, body: UserUpdateForm) {
+  return http.patch(`/users/${id}`, body);
+}
+
+export async function deleteUser(id: string) {
+  return http.delete(`/users/${id}`);
 }
 
 export async function exportUsersJob() {

@@ -3,6 +3,11 @@ export type UserInviteForm = {
   roleCode: string;
 };
 
+export type UserUpdateForm = {
+  roleCode: string;
+  status: string;
+};
+
 export type UserItem = {
   id: string;
   name: string;

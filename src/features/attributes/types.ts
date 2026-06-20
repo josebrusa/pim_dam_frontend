@@ -4,6 +4,12 @@ export type AttributeForm = {
   type: string;
 };
 
+export type AttributeUpdateForm = {
+  name: string;
+  type: string;
+  status: string;
+};
+
 export type AttributeItem = {
   id: string;
   code: string;

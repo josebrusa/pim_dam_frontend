@@ -4,6 +4,11 @@ export type CategoryForm = {
   level: number;
 };
 
+export type CategoryUpdateForm = {
+  name: string;
+  level: number;
+};
+
 export type CategoryItem = {
   id: string;
   code: string;

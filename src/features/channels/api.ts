@@ -1,5 +1,5 @@
 import { http } from '@/shared/api/http';
-import type { ChannelForm, ChannelsResponse } from './types';
+import type { ChannelForm, ChannelUpdateForm, ChannelsResponse } from './types';
 
 export async function getChannels() {
   const { data } = await http.get<ChannelsResponse>('/channels');
@@ -12,4 +12,12 @@ export async function syncAllChannels() {
 
 export async function createChannel(body: ChannelForm) {
   return http.post('/channels', body);
+}
+
+export async function updateChannel(id: string, body: ChannelUpdateForm) {
+  return http.patch(`/channels/${id}`, body);
+}
+
+export async function deleteChannel(id: string) {
+  return http.delete(`/channels/${id}`);
 }
